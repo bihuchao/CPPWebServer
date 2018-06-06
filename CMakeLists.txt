@@ -8,6 +8,8 @@ add_executable(
     CPPWebServer
     main.cpp
     config.cpp config.h
+    webserver.cpp webserver.h
+    request.cpp request.h
 )
 
 configure_file(config.ini ${CMAKE_BINARY_DIR}/config.ini)

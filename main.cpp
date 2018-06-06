@@ -1,9 +1,6 @@
-#include <iostream>
-#include "config.h"
+#include "webserver.h"
 
 int main()
 {
-    auto config = Config::GetConfig();
-
-    return 0;
+    return WebServer().run();
 }

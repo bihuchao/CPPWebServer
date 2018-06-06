@@ -23,6 +23,8 @@ public:
     void SetPort(unsigned int port=5000);
     // Set running mode of server
     void SetDeamon(bool option=false);
+
+friend class WebServer;
 };
 
 
