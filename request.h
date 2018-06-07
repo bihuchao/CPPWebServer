@@ -15,6 +15,7 @@ class Request
 {
 public:
     Request(int connection);
+    ~Request();
 
 private:
     bool m_isValid;

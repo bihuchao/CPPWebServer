@@ -10,6 +10,12 @@ add_executable(
     config.cpp config.h
     webserver.cpp webserver.h
     request.cpp request.h
+    response.cpp response.h
+    HTTPVersion.h
 )
 
 configure_file(config.ini ${CMAKE_BINARY_DIR}/config.ini)
+configure_file(index.html ${CMAKE_BINARY_DIR}/index.html)
+configure_file(404.html ${CMAKE_BINARY_DIR}/404.html)
+
+add_executable(cgi_test cgi_test.cpp)

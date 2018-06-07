@@ -1,12 +1,14 @@
 #include "webserver.h"
 #include "config.h"
 #include "request.h"
+#include "response.h"
 
 #include <iostream>
 #include <cstring>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 
 class ConnectionInfo
@@ -19,7 +21,6 @@ public:
 WebServer::WebServer()
     : m_config(Config::GetConfig())
 {
-
 }
 
 int WebServer::run()
@@ -41,9 +42,6 @@ int WebServer::run()
 
         DealRequest(connection);
     }
-
-
-
 
     return 0;
 }
@@ -117,10 +115,15 @@ void *WebServer::DealRequest(void *arg)
     Request request(connection->m_connection);
     if(request.m_isValid)
     {
-        int debug=1000;
+        Response response;
+        //response.SendNone(connection->m_connection);
+        //response.ServerFile(connection->m_connection, std::string("index.html"));
+        response.ServerCGI(connection->m_connection, std::string("cgi_test"));
     }
 
 
+
+    close(connection->m_connection);
 
     delete connection;
 

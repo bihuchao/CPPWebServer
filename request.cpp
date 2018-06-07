@@ -60,6 +60,10 @@ Request::Request(int connection)
                     return ;
                 }
             }
+            else
+            {
+                return ;
+            }
         }
     }
 
@@ -151,4 +155,13 @@ bool Request::ReadEntity(int connection, int length)
     ReadN(connection, m_entityData, length);
 
     return true;
+}
+
+Request::~Request()
+{
+    if(m_entityData)
+    {
+        delete [] m_entityData;
+        m_entityData = nullptr;
+    }
 }
