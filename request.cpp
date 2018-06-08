@@ -139,9 +139,10 @@ bool Request::ReadHeaders(int connection)
                     continue;
                 }
             }
-            std::cout <<"STRAT" << buffer << "END" << std::endl;
+            return false;
+            //std::cout <<"STRAT" << buffer << "END" << std::endl;
 
-            return true;
+            //return true;
         }
     }
 

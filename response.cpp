@@ -254,6 +254,3 @@ bool Response::SendHeaders(int connection)
 
     return SendN(connection, "\r\n", 2);
 }
-
-
-

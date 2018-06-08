@@ -9,14 +9,19 @@ public:
     WebServer();
 
     int run();
-    unsigned int Listen();
 
-    void *DealRequest(void *arg);
 
 private:
     Config *m_config;
 
     int m_serverSock;
+
+private:
+    bool DealNotFound(int connection);
+
+    unsigned int Listen();
+
+    void *DealRequest(void *arg);
 };
 
 

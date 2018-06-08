@@ -11,7 +11,7 @@ Config * Config::GetConfig()
 }
 
 Config::Config()
-    : m_port(5000), m_isDeamon(false)
+    : m_port(5000), m_isDeamon(false), m_htDocPath(std::string("."))
 {
     std::ifstream configFile(ConfigFile, std::ifstream::in);
 
@@ -42,6 +42,10 @@ Config::Config()
                 else if(strncasecmp("isDaemon", result[1].first, 8) == 0)
                 {
                     m_isDeamon = strncasecmp("no", result[2].first, 2);
+                }
+                else if(strncasecmp("htdocPath", result[1].first, 9) == 0)
+                {
+                    m_htDocPath = std::string(result[2].first, result[2].second);
                 }
                 else
                 {

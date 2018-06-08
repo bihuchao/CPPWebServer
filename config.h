@@ -3,6 +3,8 @@
 
 #define ConfigFile "config.ini"
 
+#include <string>
+
 class Config
 {
 public:
@@ -14,6 +16,9 @@ private:
 
     // Run mode, default no
     bool m_isDeamon;
+
+    // Path of hypertext path
+    std::string m_htDocPath;
 
 private:
     Config();

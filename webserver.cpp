@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 
 class ConnectionInfo
@@ -109,23 +110,69 @@ unsigned int WebServer::Listen()
 
 void *WebServer::DealRequest(void *arg)
 {
-    std::cout << "1\n";
     ConnectionInfo *connection = (ConnectionInfo *)arg;
 
     Request request(connection->m_connection);
+
     if(request.m_isValid)
     {
-        Response response;
-        //response.SendNone(connection->m_connection);
-        //response.ServerFile(connection->m_connection, std::string("index.html"));
-        response.ServerCGI(connection->m_connection, std::string("cgi_test"));
+
+        std::string path = m_config->m_htDocPath + request.m_url;
+
+        struct stat pathSt;
+        int ret = stat(path.c_str(), &pathSt);
+        // Wrong path
+        if(-1 == ret)
+        {
+            DealNotFound(connection->m_connection);
+        }
+        // DIR
+        else if(S_ISDIR(pathSt.st_mode))
+        {
+            path += std::string("/index.html");
+            ret = stat(path.c_str(), &pathSt);
+            if(-1 == ret)
+            {
+                DealNotFound(connection->m_connection);
+            }
+            else
+            {
+                Response().ServerFile(connection->m_connection, path);
+            }
+        }
+        // File with x
+        else if(S_IXUSR & pathSt.st_mode)
+        {
+            Response().ServerCGI(connection->m_connection, path);
+        }
+        else
+        {
+            Response().ServerFile(connection->m_connection, path);
+        }
     }
-
-
 
     close(connection->m_connection);
 
     delete connection;
 
     return nullptr;
+}
+
+
+bool WebServer::DealNotFound(int connection)
+{
+    std::string path = m_config->m_htDocPath + std::string("/404.html");
+    struct stat pathSt;
+    int ret = stat(path.c_str(), &pathSt);
+
+    if(-1 == ret)
+    {
+        Response(ResponseCode_404).SendNone(connection);
+    }
+    else
+    {
+        Response(ResponseCode_404).ServerFile(connection, path);
+    }
+
+    return true;
 }
