@@ -26,6 +26,11 @@ WebServer::WebServer()
 
 int WebServer::run()
 {
+    if(m_config->m_isDeamon)
+    {
+        daemon(1, 0);
+    }
+
     std::cout << "Listen At " << Listen() << "..." << std::endl;
 
     while(true)
