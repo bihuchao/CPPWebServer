@@ -1,12 +1,20 @@
 #include "response.h"
 
 #include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 #include <map>
 #include <cstring>
 #include <fstream>
 #include <cstdlib>
 #include <wait.h>
+#include <fcntl.h>
+
+static bool EndsWith(const std::string &str, const std::string &tail)
+{
+    return !(str.size() <= tail.size() || str.compare(str.size() - tail.size(), tail.size(), tail));
+}
 
 bool SendN(int connection, const char *buffer, int len)
 {
@@ -113,25 +121,37 @@ bool Response::SendNone(int connection)
 
 bool Response::ServerFile(int connection, const std::string &filename)
 {
-    int length=0;
-    {
-        std::ifstream file(filename, std::ifstream::in);
-        char ch;
-        while(!file.eof())
-        {
-            file.read(&ch, 1);
-            length++;
-        }
-        file.close();
-    }
 
-    // to do : how to use fseek - wrong
-    //file.seekg(std::ifstream::beg);
+    struct stat fileStatus;
+    int ret = stat(filename.c_str(), &fileStatus);
+    if(-1 == ret || !S_ISREG(fileStatus.st_mode))
+    {
+        perror("stat");
+        exit(1);
+    }
+    int length=(int)fileStatus.st_size;
 
     char temp[50];
     sprintf(temp, "%d", length);
     m_headers["CONTENT-LENGTH"] = std::string(temp);
-    m_headers["CONTENT-TYPE"] = std::string("text/html");
+
+
+    if(EndsWith(filename, std::string(".html")))
+    {
+        m_headers["CONTENT-TYPE"] = std::string("text/html");
+    }
+    else if(EndsWith(filename, std::string(".gif")))
+    {
+        m_headers["CONTENT-TYPE"] = std::string("image/gif");
+    }
+    else if(EndsWith(filename, std::string(".jpg")))
+    {
+        m_headers["CONTENT-TYPE"] = std::string("image/jpeg");
+    }
+    else
+    {
+        m_headers["CONTENT-TYPE"] = std::string("text/plain");
+    }
 
     if(SendResponseLine(connection))
     {

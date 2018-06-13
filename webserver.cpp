@@ -36,7 +36,7 @@ int WebServer::run()
     while(true)
     {
         auto connection  = new ConnectionInfo;
-        int len;
+        int len = sizeof(sockaddr);
 
         connection->m_connection = accept(m_serverSock, (sockaddr *)(&(connection->m_address)), (socklen_t *)(&len));
 
@@ -100,7 +100,7 @@ unsigned int WebServer::Listen()
 
     {
         sockaddr_in tempSockAddr;
-        int len;
+        int len = sizeof(tempSockAddr);
         int ret = getsockname(m_serverSock, (sockaddr *)(&tempSockAddr), (socklen_t *)(&len));
         if(-1 == ret)
         {
