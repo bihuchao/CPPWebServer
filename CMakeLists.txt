@@ -14,6 +14,11 @@ add_executable(
     HTTPVersion.h
 )
 
+target_link_libraries(
+    CPPWebServer
+    pthread
+)
+
 execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/config.ini ${CMAKE_BINARY_DIR}/config.ini)
 execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/index.html ${CMAKE_BINARY_DIR}/index.html)
 execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/test.txt ${CMAKE_BINARY_DIR}/test.txt)

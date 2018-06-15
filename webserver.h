@@ -7,21 +7,18 @@ class WebServer
 {
 public:
     WebServer();
-
     int run();
 
-
 private:
-    Config *m_config;
-
     int m_serverSock;
 
 private:
-    bool DealNotFound(int connection);
-
     unsigned int Listen();
 
-    void *DealRequest(void *arg);
+private:
+    static Config *m_config;
+    static bool DealNotFound(int connection);
+    static void *DealRequest(void *arg);
 };
 
 
