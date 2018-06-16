@@ -39,7 +39,6 @@ int WebServer::run()
 
     std::cout << "Listen At " << Listen() << "..." << std::endl;
 
-
     int epollFd = epoll_create1(EPOLL_CLOEXEC);
     if(-1 == epollFd)
     {
@@ -60,7 +59,7 @@ int WebServer::run()
     while(true)
     {
         int count = epoll_wait(epollFd, &*actionEvents.begin(), actionEvents.size(), -1);
-        std::cout << count << " " << actionEvents.size() << std::endl;
+        //std::cout << count << " " << actionEvents.size() << std::endl;
 
         if(-1 == count)
         {

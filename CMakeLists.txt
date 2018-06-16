@@ -11,6 +11,7 @@ add_executable(
     webserver.cpp webserver.h
     request.cpp request.h
     response.cpp response.h
+    ThreadPool.cpp ThreadPool.h
     HTTPVersion.h
 )
 
@@ -27,3 +28,6 @@ execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/happy.gif ${CMAKE_BINARY_DIR}/hap
 execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/404.html ${CMAKE_BINARY_DIR}/404.html)
 
 add_executable(cgi_test cgi_test.cpp)
+
+add_executable(testThreadPool testThreadPool.cpp ThreadPool.cpp ThreadPool.h)
+target_link_libraries(testThreadPool pthread)
