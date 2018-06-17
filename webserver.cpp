@@ -2,6 +2,7 @@
 #include "config.h"
 #include "request.h"
 #include "response.h"
+#include "ThreadPool.h"
 
 #include <iostream>
 #include <cstring>
@@ -27,11 +28,23 @@ public:
 Config *WebServer::m_config = Config::GetConfig();
 
 WebServer::WebServer()
+    : m_pool(new ThreadPool(8))
 {
+}
+
+WebServer::~WebServer()
+{
+    if(m_pool)
+    {
+        delete m_pool;
+        m_pool = nullptr;
+    }
 }
 
 int WebServer::run()
 {
+
+
     if(m_config->m_isDeamon)
     {
         daemon(1, 0);
@@ -117,9 +130,12 @@ int WebServer::run()
                 }
 
                 auto connection  = new ConnectionInfo(actionEvents[i].data.fd, it->second);
-                pthread_t tid;
-                pthread_create(&tid, nullptr, DealRequest, connection);
-                pthread_detach(tid);
+
+                m_pool->AddTask(Task(DealRequest, connection));
+                // without threadpool
+                //pthread_t tid;
+                //pthread_create(&tid, nullptr, DealRequest, connection);
+                //pthread_detach(tid);
 
                 info.erase(it);
 
@@ -250,6 +266,7 @@ void *WebServer::DealRequest(void *arg)
             Response().ServerFile(connection->m_connection, path);
         }
     }
+    std::cout << pthread_self() << " " << request.m_url << std::endl;
 
     close(connection->m_connection);
 
