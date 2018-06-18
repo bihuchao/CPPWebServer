@@ -18,6 +18,8 @@
 class ConnectionInfo
 {
 public:
+    ConnectionInfo()
+    {}
     ConnectionInfo(int connection, const sockaddr address)
         : m_connection(connection), m_address(address)
     {}
@@ -30,6 +32,12 @@ Config *WebServer::m_config = Config::GetConfig();
 WebServer::WebServer()
     : m_pool(new ThreadPool(8))
 {
+    int ret = chdir(m_config->m_htDocPath.c_str());
+    if(-1 == ret)
+    {
+        perror("chdir");
+        exit(1);
+    }
 }
 
 WebServer::~WebServer()
@@ -143,7 +151,6 @@ int WebServer::run()
                 //DealRequest(connection);
             }
         }
-
         // without epoll
         /*
         auto connection  = new ConnectionInfo;
@@ -157,7 +164,8 @@ int WebServer::run()
         }
 
         DealRequest(connection);
-        */
+         */
+
     }
 
     return 0;
@@ -233,7 +241,8 @@ void *WebServer::DealRequest(void *arg)
     if(request.m_isValid)
     {
 
-        std::string path = m_config->m_htDocPath + request.m_url;
+        //std::string path = m_config->m_htDocPath + request.m_url;
+        std::string path = std::string(".") + request.m_url;
 
         struct stat pathSt;
         int ret = stat(path.c_str(), &pathSt);

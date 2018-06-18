@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>我的留言板</title>
+		
+		<link rel="icon" href="favicon.ico" type="image/x-icon">
+		<link href="metro-all.css" rel="stylesheet">
+		<link href="datatables.css" rel="stylesheet">
+		
+		<script src="jquery-3.3.1.min.js"></script>
+		<script src="metro.js"></script>
+		
+		<style>
+			.pagination {
+				flex-wrap: wrap;
+			}
+		</style>
+	</head>
+<body>
+	<div class="container">
+		<h1 class="text-center">我的留言板</h1>
+		<form action="form_action" method="post">
+			<div class="row mb-2">
+				<label class="cell-sm-2">留言人</label>
+				<div class="cell-sm-10">
+					<input type="text">
+				</div>
+			</div>
+			<div class="row mb-2">
+				<label class="cell-sm-2">邮箱</label>
+				<div class="cell-sm-10">
+					<input type="email">
+				</div>
+			</div>
+			<div class="row mb-2">
+				<label class="cell-sm-2">留言内容</label>
+				<div class="cell">
+					<textarea rows="5" data-role="textarea" data-auto-size="true" data-max-height="300"></textarea>
+				</div>
+			</div>
+			<div class="row mb-3">
+				<div class="cell">
+				</div>
+				<div class="cell">
+					<button type="submit" class="button primary">提交</button>
+				</div>
+			</div>
+		</form>
+
+		<hr />
+		<hr />
+
+		<table class="table striped table-border mt-4" id="example" data-role="table" data-pagination="true">
+			<thead>
+				<tr>
+					<th class="sortable-column sort-desc" data-format="date">时间</th>
+					<th>留言内容</th>
+					<th class="sortable-column">留言人</th>
+					<th class="sortable-column">留言人邮箱</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>2018/11/01</td>
+					<td>里斯你好呀！！！</td>
+					<td>张三</td>
+					<td>zhangsan@qq.com</td>
+				</tr>
+				<tr>
+					<td>2018/11/03</td>
+					<td>里斯你好呀！！！</td>
+					<td>张三</td>
+					<td>zhangsan@qq.com</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>

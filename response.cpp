@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <wait.h>
 #include <fcntl.h>
+#include <iostream>
 
 static bool EndsWith(const std::string &str, const std::string &tail)
 {
@@ -30,7 +31,6 @@ bool SendN(int connection, const char *buffer, int len)
 
     return false;
 }
-
 
 /*
 * "200" ; Section 10.2.1: OK
@@ -148,6 +148,10 @@ bool Response::ServerFile(int connection, const std::string &filename)
     {
         m_headers["CONTENT-TYPE"] = std::string("image/jpeg");
     }
+    else if(EndsWith(filename, std::string(".css")))
+    {
+        m_headers["CONTENT-TYPE"] = std::string("text/css");
+    }
     else
     {
         m_headers["CONTENT-TYPE"] = std::string("text/plain");
@@ -211,7 +215,8 @@ bool Response::ServerCGI(int connection, const std::string &cgiFile)
     {
         signal(SIGCHLD, HandlerZombieProcess);
         close(pipeData[1]);
-        char buffer[1024];
+        // to do
+        char buffer[102400];
         int i=0, count;
         while(count = read(pipeData[0], buffer+i, 1))
         {
@@ -221,6 +226,7 @@ bool Response::ServerCGI(int connection, const std::string &cgiFile)
 
         char temp[50];
         sprintf(temp, "%d", (int)strlen(buffer));
+        std::cout << "CGI " << cgiFile << std::endl;
         m_headers["CONTENT-LENGTH"] = std::string(temp);
         m_headers["CONTENT-TYPE"] = std::string("text/html");
 
@@ -234,6 +240,7 @@ bool Response::ServerCGI(int connection, const std::string &cgiFile)
     }
     else
     {
+        std::cout << "Debug : " << cgiFile << std::endl;
         close(pipeData[0]);
         dup2(pipeData[1], fileno(stdout));
 

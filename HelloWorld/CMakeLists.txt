@@ -1,0 +1,1 @@
+add_executable(cgi_test cgi_test.cpp)

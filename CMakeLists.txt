@@ -20,14 +20,14 @@ target_link_libraries(
     pthread
 )
 
-execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/config.ini ${CMAKE_BINARY_DIR}/config.ini)
-execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/index.html ${CMAKE_BINARY_DIR}/index.html)
-execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/test.txt ${CMAKE_BINARY_DIR}/test.txt)
-execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/linus.jpg ${CMAKE_BINARY_DIR}/linus.jpg)
-execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/happy.gif ${CMAKE_BINARY_DIR}/happy.gif)
-execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/404.html ${CMAKE_BINARY_DIR}/404.html)
+add_dependencies(CPPWebServer cgi_test index)
 
-add_executable(cgi_test cgi_test.cpp)
+execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/config.ini ${CMAKE_BINARY_DIR}/config.ini)
+execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/HelloWorld ${CMAKE_BINARY_DIR}/HelloWorld)
+execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/MessageBoard ${CMAKE_BINARY_DIR}/MessageBoard)
+
+add_subdirectory(HelloWorld)
+add_subdirectory(MessageBoard)
 
 add_executable(testThreadPool testThreadPool.cpp ThreadPool.cpp ThreadPool.h)
 target_link_libraries(testThreadPool pthread)
