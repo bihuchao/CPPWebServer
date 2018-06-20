@@ -23,7 +23,7 @@ public:
 
     bool ServerFile(int connection, const std::string &filename);
 
-    bool ServerCGI(int connection, const std::string &cgiFile);
+    bool ServerCGI(int connection, const std::string &cgiFile, char *data);
 
 private:
     ResponseCode m_code;

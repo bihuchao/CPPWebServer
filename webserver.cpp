@@ -268,7 +268,7 @@ void *WebServer::DealRequest(void *arg)
         // File with x
         else if(S_IXUSR & pathSt.st_mode)
         {
-            Response().ServerCGI(connection->m_connection, path);
+            Response().ServerCGI(connection->m_connection, path, request.m_entityData);
         }
         else
         {

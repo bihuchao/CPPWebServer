@@ -20,23 +20,23 @@
 <body>
 	<div class="container">
 		<h1 class="text-center">我的留言板</h1>
-		<form action="form_action" method="post">
+		<form action="add_message" method="post">
 			<div class="row mb-2">
 				<label class="cell-sm-2">留言人</label>
 				<div class="cell-sm-10">
-					<input type="text">
+					<input name="name" type="text">
 				</div>
 			</div>
 			<div class="row mb-2">
 				<label class="cell-sm-2">邮箱</label>
 				<div class="cell-sm-10">
-					<input type="email">
+					<input name="email" type="email">
 				</div>
 			</div>
 			<div class="row mb-2">
 				<label class="cell-sm-2">留言内容</label>
 				<div class="cell">
-					<textarea rows="5" data-role="textarea" data-auto-size="true" data-max-height="300"></textarea>
+					<textarea name="message" rows="5" data-role="textarea" data-auto-size="true" data-max-height="300"></textarea>
 				</div>
 			</div>
 			<div class="row mb-3">

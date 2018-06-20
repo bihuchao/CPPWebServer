@@ -20,7 +20,7 @@ target_link_libraries(
     pthread
 )
 
-add_dependencies(CPPWebServer cgi_test index)
+add_dependencies(CPPWebServer cgi_test index add_message)
 
 execute_process(COMMAND cp ${CMAKE_SOURCE_DIR}/config.ini ${CMAKE_BINARY_DIR}/config.ini)
 execute_process(COMMAND cp -r ${CMAKE_SOURCE_DIR}/HelloWorld ${CMAKE_BINARY_DIR}/HelloWorld)

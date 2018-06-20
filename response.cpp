@@ -17,19 +17,20 @@ static bool EndsWith(const std::string &str, const std::string &tail)
     return !(str.size() <= tail.size() || str.compare(str.size() - tail.size(), tail.size(), tail));
 }
 
-bool SendN(int connection, const char *buffer, int len)
+bool WriteN(int fd, const char *buffer, int n)
 {
-    int remain = len, ncount;
-    while(remain>0 && (ncount = write(connection, buffer+len-remain, remain)))
+    int total = 0;
+    while(total < n)
     {
-        remain -= ncount;
-        if(0 == remain)
+        int count = write(fd, buffer+total, n-total);
+        if(count == -1)
         {
-            return true;
+            return false;
         }
+        total += count;
     }
 
-    return false;
+    return true;
 }
 
 /*
@@ -119,9 +120,16 @@ bool Response::SendNone(int connection)
     return false;
 }
 
+void HandlePipe(int signo)
+{
+    std::cout << "PIPE??" << std::endl;
+
+    return ;
+}
+
 bool Response::ServerFile(int connection, const std::string &filename)
 {
-
+    signal(SIGPIPE, SIG_IGN);
     struct stat fileStatus;
     int ret = stat(filename.c_str(), &fileStatus);
     if(-1 == ret || !S_ISREG(fileStatus.st_mode))
@@ -167,7 +175,7 @@ bool Response::ServerFile(int connection, const std::string &filename)
             while(!file.eof())
             {
                 file.read(&ch, 1);
-                if(!SendN(connection, &ch, 1))
+                if(!WriteN(connection, &ch, 1))
                 {
                     return false;
                 }
@@ -195,11 +203,36 @@ void HandlerZombieProcess(int signo)
     return ;
 }
 
+bool ReadAll(int fd, std::string& str)
+{
+    char buffer[1024];
+    while(true)
+    {
+        int count = read(fd, buffer, 1024);
+        if(-1 == count)
+        {
+            perror("read");
+            exit(1);
+        }
+        else if(count)
+        {
+            buffer[count] = '\0';
+            str += buffer;
+        }
+        else
+        {
+            break;
+        }
+    }
 
-bool Response::ServerCGI(int connection, const std::string &cgiFile)
+    return true;
+}
+
+bool Response::ServerCGI(int connection, const std::string &cgiFile, char *data)
 {
     int pipeData[2];
-    if(-1 == pipe(pipeData))
+    int pipeData2[2];
+    if(-1 == pipe(pipeData) || -1 == pipe(pipeData2))
     {
         perror("pipe");
         exit(1);
@@ -214,19 +247,21 @@ bool Response::ServerCGI(int connection, const std::string &cgiFile)
     else if(pid)
     {
         signal(SIGCHLD, HandlerZombieProcess);
+        signal(SIGPIPE, SIG_IGN);
         close(pipeData[1]);
-        // to do
-        char buffer[102400];
-        int i=0, count;
-        while(count = read(pipeData[0], buffer+i, 1))
+        close(pipeData2[0]);
+
+        if(data)
         {
-            i += count;
+            WriteN(pipeData2[1], data, (int)strlen(data));
         }
-        buffer[i] = '\0';
+        close(pipeData2[1]);
+
+        std::string content;
+        ReadAll(pipeData[0], content);
 
         char temp[50];
-        sprintf(temp, "%d", (int)strlen(buffer));
-        std::cout << "CGI " << cgiFile << std::endl;
+        sprintf(temp, "%d", (int)content.size());
         m_headers["CONTENT-LENGTH"] = std::string(temp);
         m_headers["CONTENT-TYPE"] = std::string("text/html");
 
@@ -234,19 +269,24 @@ bool Response::ServerCGI(int connection, const std::string &cgiFile)
         {
             if(SendHeaders(connection))
             {
-                return SendN(connection, buffer, strlen(buffer));
+                return WriteN(connection, content.c_str(), content.size());
             }
         }
+        close(pipeData[0]);
+
     }
     else
     {
-        std::cout << "Debug : " << cgiFile << std::endl;
         close(pipeData[0]);
-        dup2(pipeData[1], fileno(stdout));
+        close(pipeData2[1]);
+
+        dup2(pipeData[1], STDOUT_FILENO);
+        dup2(pipeData2[0], STDIN_FILENO);
 
         execl(cgiFile.c_str(), cgiFile.c_str(), nullptr);
 
         close(pipeData[1]);
+        close(pipeData2[0]);
     }
 
     return true;
@@ -257,7 +297,7 @@ bool Response::SendResponseLine(int connection)
     // to do: deal http version according to m_version
     char buffer[1024];
     sprintf(buffer, "HTTP/1.1 %d %s\r\n", ResponseReasonCode::GetCode(m_code), ResponseReasonCode::GetReason(m_code).c_str());
-    if(SendN(connection, buffer, strlen(buffer)))
+    if(WriteN(connection, buffer, strlen(buffer)))
     {
         return true;
     }
@@ -273,11 +313,11 @@ bool Response::SendHeaders(int connection)
     {
         char buffer[1024];
         sprintf(buffer, "%s: %s\r\n", it->first.c_str(), it->second.c_str());
-        if(!SendN(connection, buffer, strlen(buffer)))
+        if(!WriteN(connection, buffer, strlen(buffer)))
         {
             return false;
         }
     }
 
-    return SendN(connection, "\r\n", 2);
+    return WriteN(connection, "\r\n", 2);
 }
