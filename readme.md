@@ -2,7 +2,7 @@
 
 ## Introduction:
 
-**CPPWebServer** is a simply web server in CPP which can use the GET/POST method to server static content(text, HTML, PNG, etc) and dynamic content(by running CGI programs). You can read [RFC2616](https://tools.ietf.org/html/rfc2616) to understand **Hypertext Transfer Protocol**(HTTP) messages format.
+**CPPWebServer** is a simply web server based on **epoll** and **threadpool** in CPP which use GET/POST method to server static content(text, HTML, PNG, etc) and dynamic content(by running CGI programs). You can read [RFC2616](https://tools.ietf.org/html/rfc2616) to understand **Hypertext Transfer Protocol**(HTTP) messages format.
 
 CPPWebServer provides following functions:
 - provide GET/POST method to view static content and run cgi script.
@@ -33,6 +33,15 @@ make
 ./CPPWebServer
 ```
 Just enjoy it!
+
+## Examples:
+Based on CPPWebServer, HelloWorld and MessageBoard websites are built, you can change `htdocPath `in `config.ini` to test them.
+
+### MessageBoard
+![image](doc/MessageBoard.png)
+### HelloWorld
+![image](doc/HelloWorld.png)
+
 
 ## Bug
 
