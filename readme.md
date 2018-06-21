@@ -38,6 +38,7 @@ Just enjoy it!
 Based on CPPWebServer, HelloWorld and MessageBoard websites are built, you can change `htdocPath `in `config.ini` to test them.
 
 ### MessageBoard
+**MessageBoard** use **sqlite3** to save message items, you can run `sudo apt install sqlite3 libsqlite3-dev` to install sqlite3:
 ![image](doc/MessageBoard.png)
 ### HelloWorld
 ![image](doc/HelloWorld.png)
