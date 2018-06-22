@@ -34,6 +34,14 @@ make
 ```
 Just enjoy it!
 
+## Test
+CPPwebserver is tested by webbench.
+```
+webbench -c {client_num} -t 60 http://127.0.0.1:5000/test.html
+```
+![image](doc/C5K-1KB.png)
+![image](doc/C10K-1KB.png)
+
 ## Examples:
 Based on CPPWebServer, HelloWorld and MessageBoard websites are built, you can change `htdocPath `in `config.ini` to test them.
 
